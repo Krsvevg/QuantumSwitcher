@@ -19,12 +19,15 @@ namespace QuantumSwitcher
         public MainForm(int levelNumber)
         {
             InitializeComponent();
-           
+
             this.ClientSize = new Size(800, 600);
             this.DoubleBuffered = true;
             this.SetStyle(ControlStyles.OptimizedDoubleBuffer |
                          ControlStyles.AllPaintingInWmPaint |
                          ControlStyles.UserPaint, true);
+
+            // Вот тут добавляем темно-синий фон:
+            this.BackColor = Color.FromArgb(15, 20, 35);
 
             try
             {
@@ -43,9 +46,8 @@ namespace QuantumSwitcher
                 MessageBox.Show($"Ошибка запуска уровня: {ex.Message}");
                 this.Close();
             }
-          
-
         }
+
         private void OnLevelFailed()
         {
             _gameTimer.Stop();
@@ -74,20 +76,16 @@ namespace QuantumSwitcher
             }
         }
 
-
         private void OnLevelCompleted()
         {
             _gameTimer.Stop();
-            // Показываем одно сообщение
-            var result = MessageBox.Show(
-                $"Уровень {_currentLevel} пройден!\nВернуться в главное меню?",
-                "Поздравляем",
-                MessageBoxButtons.OK
-            );
 
-            // Закрываем текущую форму
-            this.DialogResult = DialogResult.OK;
-            this.Close();
+            using (var dialog = new LevelCompletedDialog(_currentLevel))
+            {
+                dialog.ShowDialog();
+                this.DialogResult = DialogResult.OK;
+                this.Close();
+            }
         }
 
         private void GameLoop(object sender, EventArgs e)
@@ -123,9 +121,8 @@ namespace QuantumSwitcher
         {
             if (e.KeyCode == Keys.Left || e.KeyCode == Keys.Right)
             {
-                _gameManager.Player.Move(0); 
+                _gameManager.Player.Move(0);
             }
         }
-
     }
 }

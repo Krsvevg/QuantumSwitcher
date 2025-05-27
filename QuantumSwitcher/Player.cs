@@ -12,20 +12,20 @@ namespace QuantumSwitcher
         public bool IsInBlueWorld { get; private set; } = true;
         public float VelocityX { get; set; }
         public float VelocityY { get; set; }
-        public int SwitchesLeft { get; private set; } = 5;
+        public int SwitchesLeft { get; private set; } = 50;
         public int Width { get; set; } = 30;
         public int Height { get; set; } = 30;
         private readonly Form _parentForm;
+        private readonly int _levelWidth;
+        private int _absoluteX; // Абсолютная позиция в уровне
         private bool _isGrounded;
         private float _jumpForce = 15f;
-        private float _gravity = 0.5f;
-        private float _maxFallSpeed = 10f;
+        private Task _colorChangeDelay;
 
-        public Player(Form parentForm)
+        public Player(Form parentForm, int levelWidth)
         {
-            if (parentForm == null)
-                throw new ArgumentNullException(nameof(parentForm));
-            _parentForm = parentForm;
+            _parentForm = parentForm ?? throw new ArgumentNullException(nameof(parentForm));
+            _levelWidth = levelWidth;
             Sprite = new PictureBox
             {
                 Width = Width,
@@ -36,27 +36,54 @@ namespace QuantumSwitcher
             _parentForm.Controls.Add(Sprite);
         }
 
-            public void SwitchWorld()
+        public void UpdatePosition()
+        {
+            if (_parentForm?.IsDisposed != false || Sprite == null)
+                return;
+
+            // Обновляем абсолютную позицию
+            _absoluteX += (int)VelocityX;
+            _absoluteX = Math.Max(0, Math.Min(_absoluteX, _levelWidth - Width));
+
+            int newY = Sprite.Top + (int)VelocityY;
+            int maxY = _parentForm.ClientSize.Height - Height;
+            newY = Math.Max(0, Math.Min(newY, maxY));
+
+            Sprite.Top = newY;
+
+            if (newY <= 0 || newY >= maxY)
+            {
+                VelocityY = 0;
+                if (_colorChangeDelay == null)
+                {
+                    _colorChangeDelay = Task.Delay(200).ContinueWith(t =>
+                    {
+                        Sprite.BackColor = IsInBlueWorld ? Color.Blue : Color.Red;
+                        _colorChangeDelay = null;
+                    }, TaskScheduler.FromCurrentSynchronizationContext());
+                }
+            }
+        }
+
+        public int GetAbsoluteX() => _absoluteX;
+
+        // Остальные методы без изменений
+        public void SwitchWorld()
         {
             if (SwitchesLeft <= 0) return;
 
             IsInBlueWorld = !IsInBlueWorld;
             SwitchesLeft--;
 
-            // Меняем цвет игрока
             Sprite.BackColor = IsInBlueWorld ? Color.Blue : Color.Red;
-
-            // Меняем направление гравитации
             VelocityY = IsInBlueWorld ? Math.Min(0, VelocityY) : Math.Max(0, VelocityY);
         }
 
         public void ApplyGravity(float gravityForce)
         {
-            // Применяем гравитацию с учетом текущего мира
             float gravity = IsInBlueWorld ? gravityForce : -gravityForce;
             VelocityY += gravity;
 
-            // Ограничиваем максимальную скорость падения/подъема
             float maxFallSpeed = 10f;
             if (IsInBlueWorld)
                 VelocityY = Math.Min(VelocityY, maxFallSpeed);
@@ -64,45 +91,9 @@ namespace QuantumSwitcher
                 VelocityY = Math.Max(VelocityY, -maxFallSpeed);
         }
 
-        public void UpdatePosition()
-        {
-            if (_parentForm == null || _parentForm.IsDisposed || Sprite == null)
-                return;
-
-            // Движение по X с границами
-            int newX = Sprite.Left + (int)VelocityX;
-            newX = Math.Max(0, Math.Min(newX, _parentForm.ClientSize.Width - Sprite.Width));
-            Sprite.Left = newX;
-
-            // Движение по Y с границами для обоих миров
-            int newY = Sprite.Top + (int)VelocityY;
-
-            // Верхняя граница (для красного мира)
-            int minY = 0;
-
-            // Нижняя граница (для синего мира)
-            int maxY = _parentForm.ClientSize.Height - Sprite.Height;
-
-            newY = Math.Max(minY, Math.Min(newY, maxY));
-            Sprite.Top = newY;
-
-            // Если достигли границы - останавливаем движение
-            if (newY <= minY || newY >= maxY)
-            {
-                VelocityY = 0;
-                Sprite.BackColor = IsInBlueWorld ? Color.LightBlue : Color.Pink;
-                Task.Delay(200).ContinueWith(t =>
-                {
-                    Sprite.BackColor = IsInBlueWorld ? Color.Blue : Color.Red;
-                }, TaskScheduler.FromCurrentSynchronizationContext());
-            }
-        }
-        public void Move(int directionX)
-        {
-            // directionX: -1 (влево), 0 (стоять), 1 (вправо)
-            VelocityX = directionX * 5; // 5 - скорость движения
-        }
+        public void Move(int directionX) => VelocityX = directionX * 5;
         public void ResetSwitches(int switchesCount) => SwitchesLeft = switchesCount;
+
         public void Jump()
         {
             Debug.WriteLine($"Прыжок. grounded={_isGrounded}, world={(IsInBlueWorld ? "blue" : "red")}");

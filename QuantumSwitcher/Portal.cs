@@ -6,9 +6,10 @@ namespace QuantumSwitcher
     public class Portal
     {
         public PictureBox Sprite { get; private set; }
-
+        public int OriginalX { get; private set; }
         public Portal(Form form, int x, int y)
         {
+            OriginalX = x;
             Sprite = new PictureBox
             {
                 Location = new Point(x, y),

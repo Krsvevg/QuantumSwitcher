@@ -19,6 +19,12 @@ namespace QuantumSwitcher
         public MainForm(int levelNumber)
         {
             InitializeComponent();
+           
+            this.ClientSize = new Size(800, 600);
+            this.DoubleBuffered = true;
+            this.SetStyle(ControlStyles.OptimizedDoubleBuffer |
+                         ControlStyles.AllPaintingInWmPaint |
+                         ControlStyles.UserPaint, true);
 
             try
             {
@@ -37,7 +43,7 @@ namespace QuantumSwitcher
                 MessageBox.Show($"Ошибка запуска уровня: {ex.Message}");
                 this.Close();
             }
-
+          
             // Таймер игры
             _gameTimer = new Timer { Interval = 16 };
             _gameTimer.Tick += GameLoop;
@@ -123,5 +129,6 @@ namespace QuantumSwitcher
                 _gameManager.Player.Move(0); // Останавливаем движение при отпускании клавиш
             }
         }
+
     }
 }

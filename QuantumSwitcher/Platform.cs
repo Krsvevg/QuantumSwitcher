@@ -6,12 +6,14 @@ namespace QuantumSwitcher
 {
     public class Platform
     {
+        public int OriginalX { get; private set; }
         public PictureBox Sprite { get; private set; }
         public bool ExistsInBlueWorld { get; set; }
         public bool ExistsInRedWorld { get; set; }
 
         public Platform(Form form, int x, int y, int width, int height, bool blueWorld, bool redWorld)
         {
+            OriginalX = x;
             if (form == null) throw new ArgumentNullException(nameof(form));
 
             ExistsInBlueWorld = blueWorld;
@@ -39,7 +41,7 @@ namespace QuantumSwitcher
             }
 
             Sprite.Visible = (isBlueWorld && ExistsInBlueWorld) || (!isBlueWorld && ExistsInRedWorld);
-            Sprite.Enabled = Sprite.Visible; 
+            Sprite.Enabled = Sprite.Visible;
             Sprite.BackColor = (isBlueWorld && ExistsInBlueWorld) ? Color.LightBlue :
                       (!isBlueWorld && ExistsInRedWorld) ? Color.Pink : Color.Gray;
         }

@@ -7,10 +7,11 @@ public class Spike
     public Rectangle Bounds => Sprite.Bounds;
     public bool ExistsInBlueWorld { get; set; }
     public bool ExistsInRedWorld { get; set; }
-
+    public int OriginalX { get; private set; }
     public Spike(Form form, int x, int y, int width, int height,
                 bool existsInBlueWorld, bool existsInRedWorld)
     {
+        OriginalX = x;
         ExistsInBlueWorld = existsInBlueWorld;
         ExistsInRedWorld = existsInRedWorld;
 

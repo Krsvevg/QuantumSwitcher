@@ -19,7 +19,7 @@ namespace QuantumSwitcher
         private readonly int _levelWidth;
         private int _absoluteX; // Абсолютная позиция в уровне
         private bool _isGrounded;
-        private float _jumpForce = 15f;
+        private float _jumpForce = 19f;
         private Task _colorChangeDelay;
 
         public Player(Form parentForm, int levelWidth)
@@ -67,7 +67,6 @@ namespace QuantumSwitcher
 
         public int GetAbsoluteX() => _absoluteX;
 
-        // Остальные методы без изменений
         public void SwitchWorld()
         {
             if (SwitchesLeft <= 0) return;

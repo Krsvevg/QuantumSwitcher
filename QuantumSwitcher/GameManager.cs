@@ -38,7 +38,7 @@ namespace QuantumSwitcher
                 return;
 
             Player.SetGrounded(CheckCollisions());
-            Player.ApplyGravity(0.5f);
+            Player.ApplyGravity(1.0f);
             Player.UpdatePosition();
             _camera.Update(Player.GetAbsoluteX());
             UpdateAllObjectsPosition();

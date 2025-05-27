@@ -33,7 +33,6 @@ namespace QuantumSwitcher
 
         public void UpdateVisibility(bool isBlueWorld)
         {
-            // Важно использовать Invoke для потокобезопасности
             if (Sprite.InvokeRequired)
             {
                 Sprite.Invoke(new Action(() => UpdateVisibility(isBlueWorld)));

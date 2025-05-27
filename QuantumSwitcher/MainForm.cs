@@ -30,7 +30,7 @@ namespace QuantumSwitcher
             {
                 this.Text = $"Уровень {levelNumber}";
                 this.ClientSize = new Size(800, 600);
-
+                _currentLevel = levelNumber;
                 _gameManager = new GameManager(this, levelNumber);
                 _gameManager.LevelCompleted += OnLevelCompleted;
                 _gameManager.LevelFailed += OnLevelFailed;
@@ -44,10 +44,7 @@ namespace QuantumSwitcher
                 this.Close();
             }
           
-            // Таймер игры
-            _gameTimer = new Timer { Interval = 16 };
-            _gameTimer.Tick += GameLoop;
-            _gameTimer.Start();
+
         }
         private void OnLevelFailed()
         {
@@ -111,10 +108,10 @@ namespace QuantumSwitcher
                     _gameManager.Player.SwitchWorld();
                     break;
                 case Keys.Left:
-                    _gameManager.Player.Move(-1);
+                    _gameManager.Player.Move(-2);
                     break;
                 case Keys.Right:
-                    _gameManager.Player.Move(1);
+                    _gameManager.Player.Move(2);
                     break;
                 case Keys.Up:
                     _gameManager.Player.Jump();
@@ -126,7 +123,7 @@ namespace QuantumSwitcher
         {
             if (e.KeyCode == Keys.Left || e.KeyCode == Keys.Right)
             {
-                _gameManager.Player.Move(0); // Останавливаем движение при отпускании клавиш
+                _gameManager.Player.Move(0); 
             }
         }
 

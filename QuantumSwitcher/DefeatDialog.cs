@@ -35,7 +35,7 @@ namespace QuantumSwitcher
             var menuBtn = new Button
             {
                 Text = "В меню",
-                DialogResult = DialogResult.Abort, // Используем Abort для возврата в меню
+                DialogResult = DialogResult.Abort, 
                 Size = new Size(100, 30),
                 Location = new Point(170, 60),
                 BackColor = Color.LightCoral
